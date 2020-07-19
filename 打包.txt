@@ -1,0 +1,1 @@
+ pyinstaller -F -w -p E:\homework_Program\UI -F E:\homework_Program\code\main.py -i E:\homework_Program\code\work.ico
