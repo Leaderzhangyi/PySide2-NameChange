@@ -4,7 +4,7 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from PySide2.QtCore import QSettings
 import pandas as pd
-import os, re,math
+import os, re, math
 import webbrowser
 from threading import Thread
 
@@ -35,33 +35,33 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def Var_Init(self):
         self.format_list = ["学号-姓名-文件名称(默认)", "姓名-学号-文件名称", "文件名称-学号-姓名", "文件名称-姓名-学号", "班级-学号-姓名-文件名称",
                             "自定义(班上有同名者，慎用)"]
-        dir_list = [] if self.app_data.value("SETUP/DIR_PATH") is None else self.app_data.value("SETUP/DIR_PATH")
+        dir_set = set() if self.app_data.value("SETUP/DIR_PATH") is None else self.app_data.value("SETUP/DIR_PATH")
+        #print("初始化set---",dir_set,type(dir_set))
         data_path = self.app_data.value("SETUP/DATA_PATH")
         number = self.app_data.value("SETUP/FOUR_ID")
         FileNames = self.app_data.value("SETUP/CHANGE_FIlENAME")
         ClassName = self.app_data.value("SETUP/CLASSNAME")
         Char_format = self.app_data.value("SETUP/SIGNAL")
-        Format_list = [] if self.app_data.value("SETUP/FORMAT_LIST") is None else self.app_data.value(
-            "SETUP/FORMAT_LIST")
-
+        Format_list = [] if self.app_data.value("SETUP/FORMAT_LIST") is None else [self.app_data.value(
+            "SETUP/FORMAT_LIST")]
         if len(Format_list) > len(self.format_list):
             self.format_list = Format_list
-        self.dir_list = dir_list
+        self.dir_set = dir_set
         self.lineEdit_2.setText(data_path)
         self.number.setText(number)
         self.charsplit.setText(Char_format)
         self.ClassName.setText(ClassName)
         self.FileNames.setText(FileNames)
         self.data_path = self.lineEdit_2.text()
-        self.comboBox.addItems(self.dir_list)
+        self.comboBox.addItems(self.dir_set)
         self.comboBox_2.addItems(self.format_list)
         self.btn_delete.setEnabled(False)
         self.Download.setEnabled(False)
-        if len(self.dir_list) != 0:
+        if len(self.dir_set) != 0:
             self.comboBox.addItem(QIcon("./imgs/clear.png"), "清除所有历史记录")
 
     def Button_Init(self):
-        self.radioButton.toggled.connect(lambda: self.Radio_Download(self.radioButton))
+        #self.radioButton.toggled.connect(lambda: self.Radio_Download(self.radioButton))
         self.Change.clicked.connect(self.Change_Name)  # begin change
         self.select1.clicked.connect(self.Get_DataFilename)
         self.select2.clicked.connect(self.Get_Filename)
@@ -96,14 +96,15 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         dir_choose = QFileDialog.getExistingDirectory(self, "选择修改文件夹", self.cwd)
         self.app_data.value("SETUP/PATH", dir_choose)
         self.comboBox.clear()
-        self.dir_list.insert(0, dir_choose)
-        self.comboBox.addItems(set(self.dir_list))
-        self.comboBox.setCurrentText(self.dir_list[0])
-        if len(self.dir_list) != 0:
+        self.dir_set.add(dir_choose)
+        print(type(self.dir_set))
+        self.comboBox.addItems(self.dir_set)
+        self.comboBox.setCurrentText(dir_choose)
+        if len(self.dir_set) != 0:
             self.comboBox.addItem(QIcon("./imgs/clear.png"), "清除所有历史记录")
 
-    def Radio_Download(self, btn):
-        self.Download.setEnabled(btn.isChecked())
+    # def Radio_Download(self, btn):
+    #     self.Download.setEnabled(btn.isChecked())
 
     def Read_Data(self):
         self.tableWidget.clear()
@@ -114,6 +115,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.student_table = self.get_name_list(self.data_path)
             self.tableWidget.setRowCount(50)
             self.tableWidget.setHorizontalHeaderLabels(['学号', '姓名'])
+            self.Download.setEnabled(False)
             try:
                 for row, (id, name) in enumerate(self.student_table.items()):
                     self.tableWidget.setItem(row, 0, QTableWidgetItem(str(id)))
@@ -122,7 +124,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                 QMessageBox.information(self, "说明", "仅展示前50条数据")
 
     def Change_Name(self):
-        self.app_data.setValue("SETUP/DIR_PATH", set(self.dir_list))
+        # print(self.dir_set)
+        # print(type(self.dir_set))
+        # print(set(self.dir_set))
+        self.app_data.setValue("SETUP/DIR_PATH", self.dir_set)
         self.app_data.setValue("SETUP/DATA_PATH", self.data_path)
         self.app_data.setValue("SETUP/FOUR_ID", self.number.text())
         self.app_data.setValue("SETUP/CHANGE_FIlENAME", self.FileNames.text())
@@ -130,10 +135,11 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.app_data.setValue("SETUP/FORMAT_LIST", self.format_list)
         self.app_data.setValue("SETUP/SIGNAL", self.charsplit.text())
         if self.number.text() == "":
-            QMessageBox.critical(self, "错误", "请填写学号前4位！", QMessageBox.Yes)
+            QMessageBox.critical(self, "错误", "请填写学号前4位！")
         elif self.student_table == {}:
-            QMessageBox.critical(self, "错误", "未读取数据！", QMessageBox.Yes)
-
+            QMessageBox.critical(self, "错误", "未读取数据！")
+        elif self.comboBox.currentText() == "":
+            QMessageBox.critical(self, "错误", "未选择修改文件路径！")
         else:
             self.to_rename(self.comboBox.currentText(), self.student_table, self.number.text(), self.FileNames.text(),
                            self.ClassName.text(), self.charsplit.text())
@@ -166,7 +172,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
 
         else:
             self.progressBar.setValue(100)
-            #self.textBrowser.setText("未出现异常错误....")
+            # self.textBrowser.setText("未出现异常错误....")
             QMessageBox.information(self, "完成", "修改完成，请到文件夹中查看")
 
     def setName(self, format_signal, st_number, name_list, ClassName, File_Name):
@@ -196,11 +202,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.tableWidget.setItem(i, 0, QTableWidgetItem(str(item)))
             self.tableWidget.setItem(i, 1, QTableWidgetItem(name_list[str(item)]))
         self.label.setText("有" + str(len(self.no_offer)) + "人未交！")
+        self.Download.setEnabled(True)
         pv = (44 - len(self.no_offer)) / 44.00
         self.progressBar.setValue(math.ceil(pv))
         QMessageBox.information(self, "结果", result)
 
     def Download_Incompete(self):
+
         df = pd.DataFrame(columns=['学号', '姓名'])
         df["学号"] = self.no_offer
         df["姓名"] = [self.student_table[str(item)] for item in self.no_offer]
@@ -222,6 +230,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def clear_all(self, text):
         if text == "清除所有历史记录":
             self.comboBox.clear()
+            self.dir_set.clear()
 
     def Customize(self, text):
         if text == "自定义(班上有同名者，慎用)":

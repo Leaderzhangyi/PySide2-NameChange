@@ -26,7 +26,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>学委的小三</string>
+   <string>学委助手v1.0测试版</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QFormLayout" name="formLayout">
