@@ -203,7 +203,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self.tableWidget.setItem(i, 1, QTableWidgetItem(name_list[str(item)]))
         self.label.setText("有" + str(len(self.no_offer)) + "人未交！")
         self.Download.setEnabled(True)
-        pv = (44 - len(self.no_offer)) / 44.00
+        pv = (len(name_list) - len(self.no_offer)) / float(len(name_list))
         self.progressBar.setValue(math.ceil(pv))
         QMessageBox.information(self, "结果", result)
 
@@ -224,7 +224,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             QMessageBox.information(self, "其他工具", "敬请期待")
 
     def About(self, ans):
-        if ans.text() == "Github":
+        if ans.text() == "Github" or "使用说明":
             webbrowser.open("https://github.com/Leaderzhangyi/Pyqt5-Change")
 
     def clear_all(self, text):
