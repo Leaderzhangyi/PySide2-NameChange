@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # PyQt5/PySide2-NameChange
 开发环境 ： Pycharm + Python3.6 + Qdesigner
 
@@ -13,3 +14,10 @@
 
 有任何问题，可以提出issues
 
+=======
+# Pyqt5-Change
+
+![GitHub stars](https://img.shields.io/github/stars/Leaderzhangyi/Pyqt5-Change?style=social)
+
+利用Pyqt5制作的GUI，通过匹配学号，完成名称修改
+>>>>>>> refs/remotes/origin/master
