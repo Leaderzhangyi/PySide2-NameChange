@@ -1,0 +1,1 @@
+ pyinstaller -w main.py文件路径 -p UI文件路径 -i 图标文件路径

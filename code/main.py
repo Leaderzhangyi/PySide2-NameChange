@@ -16,7 +16,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # 使用ui文件导入定义界面类
         # 初始化界面
         self.setupUi(self)
-        self.setWindowIcon(QIcon("./imgs/work.ico"))
+        self.setWindowIcon(QIcon("./icon/work.ico"))
 
         self.app_data = QSettings('config.ini', QSettings.IniFormat)
         self.app_data.setIniCodec('utf-8')  # 设置ini文件编码为 UTF-8
@@ -36,7 +36,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.format_list = ["学号-姓名-文件名称(默认)", "姓名-学号-文件名称", "文件名称-学号-姓名", "文件名称-姓名-学号", "班级-学号-姓名-文件名称",
                             "自定义(班上有同名者，慎用)"]
         dir_set = set() if self.app_data.value("SETUP/DIR_PATH") is None else self.app_data.value("SETUP/DIR_PATH")
-        #print("初始化set---",dir_set,type(dir_set))
+        # print("初始化set---",dir_set,type(dir_set))
         data_path = self.app_data.value("SETUP/DATA_PATH")
         number = self.app_data.value("SETUP/FOUR_ID")
         FileNames = self.app_data.value("SETUP/CHANGE_FIlENAME")
@@ -58,10 +58,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.btn_delete.setEnabled(False)
         self.Download.setEnabled(False)
         if len(self.dir_set) != 0:
-            self.comboBox.addItem(QIcon("./imgs/clear.png"), "清除所有历史记录")
+            self.comboBox.addItem(QIcon("./icon/clear.png"), "清除所有历史记录")
 
     def Button_Init(self):
-        #self.radioButton.toggled.connect(lambda: self.Radio_Download(self.radioButton))
+        # self.radioButton.toggled.connect(lambda: self.Radio_Download(self.radioButton))
         self.Change.clicked.connect(self.Change_Name)  # begin change
         self.select1.clicked.connect(self.Get_DataFilename)
         self.select2.clicked.connect(self.Get_Filename)
@@ -101,7 +101,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.comboBox.addItems(self.dir_set)
         self.comboBox.setCurrentText(dir_choose)
         if len(self.dir_set) != 0:
-            self.comboBox.addItem(QIcon("./imgs/clear.png"), "清除所有历史记录")
+            self.comboBox.addItem(QIcon("./icon/clear.png"), "清除所有历史记录")
 
     # def Radio_Download(self, btn):
     #     self.Download.setEnabled(btn.isChecked())
@@ -191,9 +191,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         olist = [int(i) for i in offer_list]
         olist.sort()
         id_list = [int(i) for i in name_list.keys()]
+        total = len(self.student_table)
         self.no_offer = [i for i in id_list if i not in olist]
         result = "有" + str(len(self.no_offer)) + "人未交！\n收齐作业进度为 %%%.2f" % (
-                (44 - len(self.no_offer)) / 44.00) + "\n点击表格右上角的↓按钮可以导出未交名单"
+                (total - len(self.no_offer)) / float(total)) + "\n点击表格右上角的↓按钮可以导出未交名单"
         self.tableWidget.setHorizontalHeaderLabels(['学号', '姓名'])
         self.tableWidget.clear()
         for i, item in enumerate(self.no_offer):
