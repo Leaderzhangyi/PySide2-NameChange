@@ -9,6 +9,6 @@
 
 利用PyqSide2制作的GUI，通过匹配学号，完成名称修改
 
-![](https://github.com/Leaderzhangyi/Pyqt5-Change/blob/master/imgs/1380000001d9b6e9b9358.jpg)
+![](https://gitee.com/LeaderZhangyi/zink-imgs/raw/master/imgs/20201204142654.jpg)
 
 有任何问题，可以提出issues
